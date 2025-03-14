@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="Subject.html">Calculate Subject wise</a>
+    </div>
+    <div class="container-box">
+        <div class="container signup-box">
+            <h1>Attendance Calculator</h1>
+            <input type="number" id="attended" placeholder="Lectures Attended">
+            <input type="number" id="total" placeholder="Total Lectures">
+            <br>
+            <button onclick="calculateAttendance()">Calculate</button>
+            <div class="result" id="result"></div>
+            <div id="targetSection" style="display: none;">
+                <input type="number" id="target" placeholder="Target Percentage">
+                <br>
+                <button onclick="calculateRequiredLectures()">Calculate Required Lectures</button>
+                <div class="result" id="targetResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateAttendance() {
+            let attended = parseInt(document.getElementById("attended").value);
+            let total = parseInt(document.getElementById("total").value);
+            
+            if (isNaN(attended) || isNaN(total) || total <= 0 || attended < 0 || attended > total) {
+                document.getElementById("result").innerHTML = "Please enter valid numbers";
+                return;
+            }
+            
+            let percentage = (attended / total) * 100;
+            document.getElementById("result").innerHTML = `Current Attendance: ${percentage.toFixed(2)}%`;
+            document.getElementById("targetSection").style.display = "block";
+        }
+
+        function calculateRequiredLectures() {
+            let attended = parseInt(document.getElementById("attended").value);
+            let total = parseInt(document.getElementById("total").value);
+            let target = parseFloat(document.getElementById("target").value);
+            
+            if (isNaN(target) || target <= 0 || target > 100) {
+                document.getElementById("targetResult").innerHTML = "Please enter a valid target percentage (0-100)";
+                return;
+            }
+            
+            let currentPercentage = (attended / total) * 100;
+            
+            if (currentPercentage >= target) {
+                document.getElementById("targetResult").innerHTML = "You have already achieved your target attendance!";
+                return;
+            }
+            
+            let requiredLectures = Math.ceil(((target - currentPercentage) * total) / 100);
+            
+            document.getElementById("targetResult").innerHTML = `You need to attend ${requiredLectures} more lectures to reach ${target}% attendance.`;
+        }
+    </script>
+</body>
+</html>
