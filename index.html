@@ -42,12 +42,12 @@
             let total = parseInt(document.getElementById("total").value);
             
             if (isNaN(attended) || isNaN(total) || total <= 0 || attended < 0 || attended > total) {
-                document.getElementById("result").innerHTML = "Please enter valid numbers";
+                document.getElementById("result").innerHTML =  "<p style='color: white; text-align: center;'>Please enter valid numbers</p>";
                 return;
             }
             
             let percentage = (attended / total) * 100;
-            document.getElementById("result").innerHTML = `Current Attendance: ${percentage.toFixed(2)}%`;
+            document.getElementById("result").innerHTML = `<p style='color: white; text-align: center;'>Current Attendance: ${percentage.toFixed(2)}%</p>`;
             document.getElementById("targetSection").style.display = "block";
         }
 
@@ -57,20 +57,20 @@
             let target = parseFloat(document.getElementById("target").value);
             
             if (isNaN(target) || target <= 0 || target > 100) {
-                document.getElementById("targetResult").innerHTML = "Please enter a valid target percentage (0-100)";
+                document.getElementById("targetResult").innerHTML = "<p style='color: white; text-align: center;'>Please enter a valid target percentage (0-100)</p>";
                 return;
             }
             
             let currentPercentage = (attended / total) * 100;
             
             if (currentPercentage >= target) {
-                document.getElementById("targetResult").innerHTML = "You have already achieved your target attendance!";
+                document.getElementById("targetResult").innerHTML = "<p style='color: white; text-align: center;'>You have already achieved your target attendance!</p>";
                 return;
             }
             
             let requiredLectures = Math.ceil(((target - currentPercentage) * total) / 100);
             
-            document.getElementById("targetResult").innerHTML = `You need to attend ${requiredLectures} more lectures to reach ${target}% attendance.`;
+            document.getElementById("targetResult").innerHTML = `<p style='color: white; text-align: center;'>You need to attend ${requiredLectures} more lectures to reach ${target}% attendance.</p>`;
         }
     </script>
 </body>
