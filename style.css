@@ -6,9 +6,17 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: url('./horror-scene-with-eerie-classroom.jpg') no-repeat center center/cover;
+    background: linear-gradient(-45deg, #0a0a0a, #220f2a, #451b3c, #0a0a0a);
+    background-size: 300% 300%;
     position: relative;
     overflow: hidden;
+    animation: moveGradient 10s ease-in-out infinite;
+}
+
+@keyframes moveGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 body::before {
@@ -22,7 +30,6 @@ body::before {
     z-index: 1;
 }
 
-/* Navbar Styling */
 .navbar {
     position: absolute;
     top: 10px;
