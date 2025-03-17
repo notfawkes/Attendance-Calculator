@@ -1,89 +1,146 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/11.4.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/11.4.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/11.4.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/11.4.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/11.4.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/11.4.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/11.4.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/11.4.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/11.4.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/11.4.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Calculator</title>
+    <link rel="stylesheet" href="style.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q9TGEVGDFS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Q9TGEVGDFS');
+</script>
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="Subject.html">Calculate Subject wise</a>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+    <div class="container-box">
+        <div class="container signup-box">
+            <h1>Attendance Calculator</h1>
+            <input type="number" id="attended" placeholder="Lectures Attended">
+            <input type="number" id="total" placeholder="Total Lectures">
+            <br>
+            <button onclick="calculateAttendance()">Calculate</button>
+            <div class="result" id="result"></div>
+            <div id="targetSection" style="display: none;">
+                <input type="number" id="target" placeholder="Target Percentage">
+                <br>
+                <button onclick="calculateRequiredLectures()">Calculate Required Lectures</button>
+                <div class="result" id="targetResult"></div>
+            </div>
+        </div>
+    </div>
+
+<div id="userInfoPopup" class="popup-overlay">
+    <div class="popup-box">
+        <h2>Enter Your Details</h2>
+        <input type="text" id="userName" placeholder="Enter Your Name" required>
+        <input type="text" id="userCollege" placeholder="Enter Your College" required>
+        <input type="text" id="userBranch" placeholder="Enter Your Branch" required>
+        <button onclick="saveUserInfo()">Save</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        function calculateAttendance() {
+            let attended = parseInt(document.getElementById("attended").value);
+            let total = parseInt(document.getElementById("total").value);
+            
+            if (isNaN(attended) || isNaN(total) || total <= 0 || attended < 0 || attended > total) {
+                document.getElementById("result").innerHTML =  "<p style='color: white; text-align: center;'>Please enter valid numbers</p>";
+                return;
+            }
+            
+            let percentage = (attended / total) * 100;
+            document.getElementById("result").innerHTML = `<p style='color: white; text-align: center;'>Current Attendance: ${percentage.toFixed(2)}%</p>`;
+            document.getElementById("targetSection").style.display = "block";
         }
-      });
+
+        function calculateRequiredLectures() {
+            let attended = parseInt(document.getElementById("attended").value);
+            let total = parseInt(document.getElementById("total").value);
+            let target = parseFloat(document.getElementById("target").value);
+            
+            if (isNaN(target) || target <= 0 || target > 100) {
+                document.getElementById("targetResult").innerHTML = "<p style='color: white; text-align: center;'>Please enter a valid target percentage (0-100)</p>";
+                return;
+            }
+            
+            let currentPercentage = (attended / total) * 100;
+            
+            if (currentPercentage >= target) {
+                document.getElementById("targetResult").innerHTML = "<p style='color: white; text-align: center;'>You have already achieved your target attendance!</p>";
+                return;
+            }
+            
+            let requiredLectures = Math.ceil(((target - currentPercentage) * total) / 100);
+            
+            document.getElementById("targetResult").innerHTML = `<p style='color: white; text-align: center;'>You need to attend ${requiredLectures} more lectures to reach ${target}% attendance.</p>`;
+        }
+
+        // 🔥 Firebase Configuration (Replace with your details)
+const firebaseConfig = {
+    apiKey: "AIzaSyBpIMC1K0310O1OdQthbU0bBWBUmhkDA8Y",
+    authDomain: "attendancecalculator-010706.firebaseapp.com",
+    projectId: "attendancecalculator-010706",
+    storageBucket: "attendancecalculator-010706.firebasestorage.app",
+    messagingSenderId: "565288975543",
+    appId: "1:565288975543:web:bb8157f3c64c2df96c2132",
+    measurementId: "G-V0PLPRVPCR"
+};
+
+// 🔹 Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// 🔹 Function to check if user has already submitted details
+document.addEventListener("DOMContentLoaded", function() {
+    const userName = localStorage.getItem("userName");
+    if (userName) {
+        document.getElementById("userInfoPopup").style.display = "none"; // Hide popup
+    }
+});
+
+// 🔹 Function to Save User Data
+function saveUserInfo() {
+    const name = document.getElementById("userName").value.trim();
+    const college = document.getElementById("userCollege").value.trim();
+    const branch = document.getElementById("userBranch").value.trim();
+
+    if (name && college && branch) {
+        // 🔹 Save to Firebase Firestore
+        db.collection("users").add({
+            name: name,
+            college: college,
+            branch: branch,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            // 🔹 Save to localStorage
+            localStorage.setItem("userName", name);
+            localStorage.setItem("userCollege", college);
+            localStorage.setItem("userBranch", branch);
+
+            // 🔹 Hide Popup
+            document.getElementById("userInfoPopup").style.display = "none";
+            alert("Details saved successfully!");
+        })
+        .catch(error => {
+            console.error("Error adding document: ", error);
+            alert("Failed to save details. Please try again.");
+        });
+    } else {
+        alert("Please fill all fields!");
+    }
+}
+
     </script>
-  </body>
+</body>
 </html>
