@@ -5,19 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance Calculator</title>
     <link rel="stylesheet" href="style.css">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q9TGEVGDFS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-Q9TGEVGDFS');
-</script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q9TGEVGDFS"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Q9TGEVGDFS');
+    </script>
+
+    <!-- Firebase Scripts (NO `type="module"`) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpIMC1K0310O1OdQthbU0bBWBUmhkDA8Y",
+            authDomain: "attendancecalculator-010706.firebaseapp.com",
+            projectId: "attendancecalculator-010706",
+            storageBucket: "attendancecalculator-010706.firebasestorage.app",
+            messagingSenderId: "565288975543",
+            appId: "1:565288975543:web:bb8157f3c64c2df96c2132",
+            measurementId: "G-V0PLPRVPCR"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
 </head>
 <body>
     <div class="navbar">
         <a href="index.html">Home</a>
         <a href="Subject.html">Calculate Subject wise</a>
     </div>
+
     <div class="container-box">
         <div class="container signup-box">
             <h1>Attendance Calculator</h1>
@@ -35,22 +57,64 @@
         </div>
     </div>
 
-<div id="userInfoPopup" class="popup-overlay">
-    <div class="popup-box">
-        <h2>Enter Your Details</h2>
-        <input type="text" id="userName" placeholder="Enter Your Name" required>
-        <input type="text" id="userCollege" placeholder="Enter Your College" required>
-        <input type="text" id="userBranch" placeholder="Enter Your Branch" required>
-        <button onclick="saveUserInfo()">Save</button>
+    <!-- User Info Popup -->
+    <div id="userInfoPopup" class="popup-overlay">
+        <div class="popup-box">
+            <h2>Enter Your Details</h2>
+            <input type="text" id="userName" placeholder="Enter Your Name" required>
+            <input type="text" id="userCollege" placeholder="Enter Your College" required>
+            <input type="text" id="userBranch" placeholder="Enter Your Branch" required>
+            <button onclick= "saveUserInfo()">Save</button>
+        </div>
     </div>
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    <!-- Firebase Authentication Logic -->
+    <script src="firebase-auth.js"></script>
 
-
+    <!-- Main Script -->
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const db = firebase.firestore();
+
+            // Check if user data exists
+            const userName = localStorage.getItem("userName");
+            if (userName) {
+                document.getElementById("userInfoPopup").style.display = "none";
+            }
+
+            // Function to Save User Data
+            function saveUserInfo (){
+                const name = document.getElementById("userName").value.trim();
+                const college = document.getElementById("userCollege").value.trim();
+                const branch = document.getElementById("userBranch").value.trim();
+
+                if (name && college && branch) {
+                    db.collection("users").add({
+                        name: name,
+                        college: college,
+                        branch: branch,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    })
+                    .then(() => {
+                        localStorage.setItem("userName", name);
+                        localStorage.setItem("userCollege", college);
+                        localStorage.setItem("userBranch", branch);
+
+                        document.getElementById("userInfoPopup").style.display = "none";
+                        alert("Details saved successfully!");
+                    })
+                    .catch(error => {
+                        console.error("Error adding document: ", error);
+                        alert("Failed to save details. Please try again.");
+                    });
+                } else {
+                    alert("Please fill all fields!");
+                }
+            };
+        });
+
+        window.saveUserInfo = saveUserInfo;
+
         function calculateAttendance() {
             let attended = parseInt(document.getElementById("attended").value);
             let total = parseInt(document.getElementById("total").value);
@@ -86,65 +150,7 @@
             
             document.getElementById("targetResult").innerHTML = `<p style='color: white; text-align: center;'>You need to attend ${requiredLectures} more lectures to reach ${target}% attendance.</p>`;
         }
-
-        // 🔥 Firebase Configuration (Replace with your details)
-const firebaseConfig = {
-    apiKey: "AIzaSyBpIMC1K0310O1OdQthbU0bBWBUmhkDA8Y",
-    authDomain: "attendancecalculator-010706.firebaseapp.com",
-    projectId: "attendancecalculator-010706",
-    storageBucket: "attendancecalculator-010706.firebasestorage.app",
-    messagingSenderId: "565288975543",
-    appId: "1:565288975543:web:bb8157f3c64c2df96c2132",
-    measurementId: "G-V0PLPRVPCR"
-};
-
-// 🔹 Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-db.settings({ timestampsInSnapshots: true });
-
-
-// 🔹 Function to check if user has already submitted details
-document.addEventListener("DOMContentLoaded", function() {
-    const userName = localStorage.getItem("userName");
-    if (userName) {
-        document.getElementById("userInfoPopup").style.display = "none"; // Hide popup
-    }
-});
-
-// 🔹 Function to Save User Data
-function saveUserInfo() {
-    const name = document.getElementById("userName").value.trim();
-    const college = document.getElementById("userCollege").value.trim();
-    const branch = document.getElementById("userBranch").value.trim();
-
-    if (name && college && branch) {
-        // 🔹 Save to Firebase Firestore
-        db.collection("users").add({
-            name: name,
-            college: college,
-            branch: branch,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        })
-        .then(() => {
-            // 🔹 Save to localStorage
-            localStorage.setItem("userName", name);
-            localStorage.setItem("userCollege", college);
-            localStorage.setItem("userBranch", branch);
-
-            // 🔹 Hide Popup
-            document.getElementById("userInfoPopup").style.display = "none";
-            alert("Details saved successfully!");
-        })
-        .catch(error => {
-            console.error("Error adding document: ", error);
-            alert("Failed to save details. Please try again.");
-        });
-    } else {
-        alert("Please fill all fields!");
-    }
-}
-
     </script>
+
 </body>
 </html>
